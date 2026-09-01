@@ -46,6 +46,50 @@ Now we only have the interesting columns of the dataframe, so we can get on with
 Looking at the variable `DIM_GEO_CODE_TYPE`, I can see that there are several different geographical levels/classifications in this column.
 
 ```{r}
+unique(alcohol$DIM_GEO_CODE_TYPE)
+table(alcohol$DIM_GEO_CODE_TYPE)
+```
+
+I will separate out the data into new data frames based on the `DIM_GEO_CODE_TYPE` using the `dplyr` package.
+
+```{r}
+library(dplyr)
+alcohol_class <- filter(alcohol, DIM_GEO_CODE_TYPE == "CLASSIFICATION")
+alcohol_country <- filter(alcohol, DIM_GEO_CODE_TYPE == "COUNTRY")
+alcohol_global <- filter(alcohol, DIM_GEO_CODE_TYPE == "GLOBAL")
+alcohol_region <- filter(alcohol, DIM_GEO_CODE_TYPE == "REGION")
+alcohol_whoregion <- filter(alcohol, DIM_GEO_CODE_TYPE == "WHOREGION")
+```
+
+These data sets are now set up to use for making graphs.
+
+## Alternative dataset
+
+The WHO also has another dataset, which further subdivides alcohol consumption by beverage type.
+https://www.who.int/data/gho/data/indicators/indicator-details/GHO/alcohol-recorded-per-capita-(15-)-consumption-(in-litres-of-pure-alcohol)
+
+```{r}
+beverage_type <- read.csv("alcohol_bev_type.csv")
+head(beverage_type)
+summary(beverage_type)
+```
+
+Like the previous dataset, there are a few columns which contain the same information for each entry, so they will be removed.
+
+```{r}
+beverage_type <- beverage_type[, c(4, 5, 7, 8, 10, 11, 13, 14, 21, 22, 24, 30, 31, 33, 34)]
+head(beverage_type)
+```
+
+## Regions and parent locations
+
+Both datasets refer to regions or classifications - these are groups of countries based on factors such as geographical location or income.
+
+The `beverage_type` dataset makes it obvious which country belongs to which 'parent region' with the `ParentLocation` column. The `alcohol` data set does not have this built in, so it would be useful to have a grouping reference for when I want to compare between levels.
+
+I'll retrieve the  parent regions from `beverage_type` to see if they match up with the ones from `alcohol`:
+
+```{r}
 
 ```
 
