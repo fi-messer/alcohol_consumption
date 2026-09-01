@@ -5,7 +5,7 @@ Fiona Messer
 
 ## Load the data
 
-Load the dataframe downloaded from WHO
+Load the data frame downloaded from WHO
 <https://data.who.int/indicators/i/EF38E6A/EE6F72A>
 
 ``` r
@@ -141,8 +141,8 @@ head(alcohol)
     ## 5         14.557763          12.680295          16.571871
     ## 6          8.715128           6.812557          10.710716
 
-Now we only have the interesting columns of the dataframe, so we can get
-on with playing with the data.
+Now we only have the interesting columns of the data frame, so we can
+get on with playing with the data.
 
 ## Sort the data into new datframes
 
@@ -196,7 +196,7 @@ These data sets are now set up to use for making graphs.
 
 ## Alternative dataset
 
-The WHO also has another dataset, which further subdivides alcohol
+The WHO also has another data set, which further subdivides alcohol
 consumption by beverage type.
 <https://www.who.int/data/gho/data/indicators/indicator-details/GHO/alcohol-recorded-per-capita-(15-)-consumption-(in-litres-of-pure-alcohol)>
 
@@ -367,7 +367,7 @@ summary(beverage_type)
     ##  Max.   :827                                                                
     ##  NA's   :52498
 
-Like the previous dataset, there are a few columns which contain the
+Like the previous data set, there are a few columns which contain the
 same information for each entry, so they will be removed.
 
 ``` r
@@ -420,13 +420,67 @@ head(beverage_type)
 
 ## Regions and parent locations
 
-Both datasets refer to regions or classifications - these are groups of
+Both data sets refer to regions or classifications - these are groups of
 countries based on factors such as geographical location or income.
 
-The `beverage_type` dataset makes it obvious which country belongs to
+The `beverage_type` data set makes it obvious which country belongs to
 which ‘parent region’ with the `ParentLocation` column. The `alcohol`
 data set does not have this built in, so it would be useful to have a
 grouping reference for when I want to compare between levels.
 
 I’ll retrieve the parent regions from `beverage_type` to see if they
 match up with the ones from `alcohol`:
+
+``` r
+unique(beverage_type$ParentLocation)
+```
+
+    ## [1] "Eastern Mediterranean" "Africa"                "Europe"               
+    ## [4] "South-East Asia"       "Americas"              "Western Pacific"
+
+``` r
+unique(alcohol_whoregion$GEO_NAME_SHORT)
+```
+
+    ## [1] "Africa"                "Americas"              "South-East Asia"      
+    ## [4] "Europe"                "Eastern Mediterranean" "Western Pacific"
+
+As we can see, `ParentLocation` in `beverage_type` and `whoregion` in
+`alcohol` use the same classification system. So we can extract the
+classification from the `beverage_type` data set, and apply it to the
+alcohol data set.
+
+``` r
+WHO_REGIONS <- beverage_type[, 1:4]
+WHO_REGIONS <- (WHO_REGIONS %>% distinct(Location, .keep_all = TRUE))
+```
+
+`WHO_REGIONS` is now a reference table available in the
+**data_import_files** folder.
+
+I can add the WHO Region back into the `alcohol_country` data set.
+
+``` r
+WHO_REGIONS$GEO_NAME_SHORT <- WHO_REGIONS$Location
+WHO_REGIONS$Location <- NULL
+alcohol_country <- merge(WHO_REGIONS, alcohol_country, by = "GEO_NAME_SHORT")
+```
+
+## Classifications
+
+The alcohol data set has data on `Classification`, which refers to a UN
+classification system of development
+<https://unstats.un.org/unsd/methodology/m49/>
+
+``` r
+unique(alcohol_class$GEO_NAME_SHORT)
+```
+
+    ## [1] "Least developed countries"                                                                   
+    ## [2] "Landlocked developing countries"                                                             
+    ## [3] "Developed regions (Europe, Cyprus, Israel, Northern America, Japan, Australia & New Zealand)"
+    ## [4] "Developing regions"                                                                          
+    ## [5] "Small Island Developing States"
+
+I might add this into the `alcohol_country` data set later, but for now
+I will leave it out.
