@@ -3,28 +3,49 @@ title: "data_import"
 author: "Fiona Messer"
 date: "2026-08-28"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Load the data
+Load the dataframe downloaded from WHO 
+https://data.who.int/indicators/i/EF38E6A/EE6F72A
+```{r}
+alcohol <- read.csv("alcohol_consumption.csv")
+summary(alcohol)
+head(alcohol)
 ```
 
-## Including Plots
+## Simplify the dataframe
 
-You can also embed plots, for example:
+There are a few columns which we don't need to keep, for example the first four columns contain the same code for each line of the data.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+alcohol <- alcohol[,5:15]
+head(alcohol)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The columns `DIM_TIME_TYPE`, `DIM_PUBLISH_STATE_CODE`, `IND_NAME` and `DIM_SEX` are also all the same for all of the data as well, so they can be removed.
+
+```{r}
+alcohol$DIM_TIME_TYPE <- NULL
+alcohol$DIM_PUBLISH_STATE_CODE <- NULL
+alcohol$IND_NAME <- NULL
+alcohol$DIM_SEX <- NULL
+head(alcohol)
+```
+
+Now we only have the interesting columns of the dataframe, so we can get on with playing with the data.
+
+## Sort the data into new datframes
+
+Looking at the variable `DIM_GEO_CODE_TYPE`, I can see that there are several different geographical levels/classifications in this column.
+
+```{r}
+
+```
+
