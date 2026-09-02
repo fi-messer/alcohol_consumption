@@ -484,3 +484,9 @@ unique(alcohol_class$GEO_NAME_SHORT)
 
 I might add this into the `alcohol_country` data set later, but for now
 I will leave it out.
+
+For now, I will save the `alcohol_country` data set as a csv.
+
+``` r
+write.csv(alcohol_country, "alcohol_country.csv")
+```

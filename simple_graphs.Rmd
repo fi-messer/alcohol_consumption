@@ -1,0 +1,64 @@
+---
+title: "Simple graphs"
+author: "Fiona Messer"
+date: "2026-09-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+## Making simple plots
+
+Now the data sets are nicely formatted I can start messing around with plotting the data in fun and interesting ways.
+
+Load the data from the `data_import_files` folder:
+
+```{r}
+alcohol_country <- read.csv("alcohol_country.csv")
+```
+
+I will start by plotting the alcohol consumption data for a random country over time. First, choose a country:
+
+```{r}
+country <- unique(alcohol_country$GEO_NAME_SHORT)[[sample(1:length(unique(alcohol_country$GEO_NAME_SHORT)), 1)]]
+filter(alcohol_country, GEO_NAME_SHORT == country)
+print(country)
+```
+
+Next, plot a scatterplot with a line:
+
+```{r}
+alcohol_country %>% 
+  filter(alcohol_country$GEO_NAME_SHORT == country) %>%
+  ggplot(aes(x=DIM_TIME, y=RATE_PER_CAPITA_N)) +
+    geom_line() +
+    geom_point()
+```
+
+Plot made, can I add the upper and lower estimates as well?
+
+```{r}
+alcohol_country %>% 
+  filter(alcohol_country$GEO_NAME_SHORT == country) %>%
+  ggplot(aes(x=DIM_TIME)) +
+    geom_line(aes(y = RATE_PER_CAPITA_N, colour = "Rate per capita")) +
+    geom_line(aes(y = RATE_PER_CAPITA_NL, colour = "Lower limit")) +
+    geom_line(aes(y = RATE_PER_CAPITA_NU, colour = "Upper limit"))
+```
+
+Alternatively with error bars:
+
+```{r}
+alcohol_country %>% 
+  filter(alcohol_country$GEO_NAME_SHORT == country) %>%
+  ggplot(aes(x=DIM_TIME)) +
+  geom_line(aes(y = RATE_PER_CAPITA_N)) +
+  geom_errorbar(aes(ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU))
+  
+```
+
+Which looks ugly.
