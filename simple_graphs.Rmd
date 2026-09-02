@@ -17,13 +17,13 @@ Now the data sets are nicely formatted I can start messing around with plotting 
 
 Load the data from the `data_import_files` folder:
 
-```{r}
+```{r read csv}
 alcohol_country <- read.csv("alcohol_country.csv")
 ```
 
 I will start by plotting the alcohol consumption data for a random country over time. First, choose a country:
 
-```{r}
+```{r Choose country}
 country <- unique(alcohol_country$GEO_NAME_SHORT)[[sample(1:length(unique(alcohol_country$GEO_NAME_SHORT)), 1)]]
 filter(alcohol_country, GEO_NAME_SHORT == country)
 print(country)
@@ -31,7 +31,8 @@ print(country)
 
 Next, plot a scatterplot with a line:
 
-```{r}
+```{r Scatter and line plot}
+#| fig.cap: !expr country
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME, y=RATE_PER_CAPITA_N)) +
@@ -41,7 +42,7 @@ alcohol_country %>%
 
 Plot made, can I add the upper and lower estimates as well?
 
-```{r}
+```{r Upper and lower limits, fig.cap="Alcohol consumption per capita + error"}
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME)) +
@@ -52,7 +53,7 @@ alcohol_country %>%
 
 Alternatively with error bars:
 
-```{r}
+```{r Error bars, fig.cap="Alcohol consumption per capita + error bars"}
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME)) +
@@ -63,7 +64,7 @@ alcohol_country %>%
 
 Which looks ugly. Try the `geom_ribbon()` function instead.
 
-```{r}
+```{r Error ribbon, fig.cap="Alcohol consumption per capita + error ribbon"}
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME, y = RATE_PER_CAPITA_N, ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU)) +
