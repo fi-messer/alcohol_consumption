@@ -2,7 +2,7 @@
 title: "Simple graphs"
 author: "Fiona Messer"
 date: "2026-09-01"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -61,4 +61,13 @@ alcohol_country %>%
   
 ```
 
-Which looks ugly.
+Which looks ugly. Try the `geom_ribbon()` function instead.
+
+```{r}
+alcohol_country %>% 
+  filter(alcohol_country$GEO_NAME_SHORT == country) %>%
+  ggplot(aes(x=DIM_TIME, y = RATE_PER_CAPITA_N, ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU)) +
+  geom_line() +
+  geom_ribbon(alpha = 0.25)
+```
+
