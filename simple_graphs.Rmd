@@ -32,7 +32,7 @@ print(country)
 Next, plot a scatterplot with a line:
 
 ```{r Scatter and line plot}
-#| fig.cap: !expr country
+#| fig.cap: !expr paste0("Alcohol consuption rate (L/year) per capita, ", country)
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME, y=RATE_PER_CAPITA_N)) +
@@ -42,7 +42,8 @@ alcohol_country %>%
 
 Plot made, can I add the upper and lower estimates as well?
 
-```{r Upper and lower limits, fig.cap="Alcohol consumption per capita + error"}
+```{r Upper and lower limits}
+#| fig.cap: !expr paste0("Alcohol consuption rate (L/year) per capita, ", country, ", with errors")
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME)) +
@@ -53,7 +54,8 @@ alcohol_country %>%
 
 Alternatively with error bars:
 
-```{r Error bars, fig.cap="Alcohol consumption per capita + error bars"}
+```{r Error bars}
+#| fig.cap: !expr paste0("Alcohol consuption rate (L/year) per capita, ", country, ", with error bars")
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME)) +
@@ -64,11 +66,23 @@ alcohol_country %>%
 
 Which looks ugly. Try the `geom_ribbon()` function instead.
 
-```{r Error ribbon, fig.cap="Alcohol consumption per capita + error ribbon"}
+```{r Error ribbon}
+#| fig.cap: !expr paste0("Alcohol consuption rate (L/year) per capita, ", country, ", with error ribbon")
+
+source("ggplot2_theme_FM.R")
+
 alcohol_country %>% 
   filter(alcohol_country$GEO_NAME_SHORT == country) %>%
   ggplot(aes(x=DIM_TIME, y = RATE_PER_CAPITA_N, ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU)) +
-  geom_line() +
-  geom_ribbon(alpha = 0.25)
+  geom_ribbon(alpha = 0.25, colour = "#BC5F04", fill = "#BC5F04") +
+  geom_line(colour = "#010001") +
+  theme_FM() +
+  labs(title = paste0("Alcohol consumption rate of adults in ", country), 
+       subtitle = "Litres per year per capita",
+       x = NULL,
+       y = "Rate (L/Year) per Capita") +
+  xlim(2000, 2022) +
+  ylim(0, max(alcohol_country$RATE_PER_CAPITA_NU))
 ```
 
+Now the plot looks pretty.
