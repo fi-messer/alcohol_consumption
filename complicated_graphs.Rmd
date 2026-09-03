@@ -1,0 +1,68 @@
+---
+title: "More complicated graphs"
+author: "Fiona Messer"
+date: "2026-09-03"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+source("ggplot2_theme_FM.R")
+```
+
+I want to look at a region and several countries at the same time. I could go back to the original data set before I split it up, but I want to keep the columns I added to `alcohol_country` which give the parent WHO region for each country.
+
+Instead, I will combine the `alcohol_country` and `alcohol_whoregion` data frames.
+
+```{r Combine country and WHO region dfs}
+alcohol_reg_country <- bind_rows(alcohol_country, alcohol_whoregion)
+alcohol_reg_country$X <- NULL
+```
+
+Next I will plot alcohol consumption over time for Europe and five random European countries.
+
+## Alcohol consumption in Europe between 2000-2022
+
+First I'll pick five countries at random:
+
+```{r Country picker}
+country <- filter(WHO_REGIONS, ParentLocation == "Europe")
+country <- sample(country$GEO_NAME_SHORT, size = 5, replace = FALSE)
+```
+
+Next plot just the data for the region of Europe on a ribbon plot:
+
+```{r Europe alcohol consumption}
+alcohol_reg_country %>% 
+  filter(alcohol_reg_country$GEO_NAME_SHORT == "Europe") %>%
+  ggplot(aes(x=DIM_TIME, y = RATE_PER_CAPITA_N, ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU)) +
+  geom_ribbon(alpha = 0.25, colour = "#BC5F04", fill = "#BC5F04") +
+  geom_line(colour = "#010001") +
+  theme_FM() +
+  labs(title = paste0("Alcohol consumption rate of adults in Europe"), 
+       subtitle = "Litres per year per capita",
+       x = NULL,
+       y = "Rate (L/Year) per Capita") +
+  xlim(2000, 2022) +
+  ylim(0, max(alcohol_reg_country$RATE_PER_CAPITA_NU))
+```
+
+Next I'll plot the five random countries I picked earlier.
+
+```{r Five European countries}
+alcohol_reg_country %>% 
+  filter(alcohol_reg_country$GEO_NAME_SHORT == country) %>%
+  ggplot(aes(x=DIM_TIME, y = RATE_PER_CAPITA_N, ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU)) +
+  geom_ribbon(alpha = 0.25, colour = "#BC5F04", fill = "#BC5F04") +
+  geom_line(colour = "#010001") +
+  theme_FM() +
+  labs(title = paste0("Alcohol consumption rate of adults in Europe"), 
+       subtitle = "Litres per year per capita",
+       x = NULL,
+       y = "Rate (L/Year) per Capita") +
+  xlim(2000, 2022) +
+  ylim(0, max(alcohol_reg_country$RATE_PER_CAPITA_NU))
+```
+
