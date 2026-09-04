@@ -59,9 +59,16 @@ theme_FM <- function() {
     aspect.ratio = 0.75)
 }
 
-# Color palette
+# Color palettes
 autumn <- c("#010010",
             "#2B0504",
             "#874000",
             "#BC5F04",
             "#F4442E")
+
+dusty <- c("#010010",
+           "#AFC2D5",
+           "#CCDDD3",
+           "#DFEFCA",
+           "#FFF9A5",
+           "#B48B7D")

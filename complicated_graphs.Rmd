@@ -49,20 +49,54 @@ alcohol_reg_country %>%
   ylim(0, max(alcohol_reg_country$RATE_PER_CAPITA_NU))
 ```
 
-Next I'll plot the five random countries I picked earlier.
+Next I'll plot the five random countries I picked earlier. I am going to make a new object, `plotting_data`, to make it easier to handle which parts of the data set I'm trying to plot at any given moment.
+
+```{r plotting_data}
+if (nrow(plotting_data) > 0) {
+  plotting_data <- NULL
+} 
+plotting_data <- data.frame()
+for (c in country) {
+  plotting_data <- rbind(filter(alcohol_reg_country, GEO_NAME_SHORT == c), plotting_data)
+}
+```
+
+I have the data organised, next I'll make the plot.
 
 ```{r Five European countries}
-alcohol_reg_country %>% 
-  filter(alcohol_reg_country$GEO_NAME_SHORT == country) %>%
-  ggplot(aes(x=DIM_TIME, y = RATE_PER_CAPITA_N, ymin = RATE_PER_CAPITA_NL, ymax = RATE_PER_CAPITA_NU)) +
-  geom_ribbon(alpha = 0.25, colour = "#BC5F04", fill = "#BC5F04") +
-  geom_line(colour = "#010001") +
+ggplot(plotting_data, 
+       aes(x = DIM_TIME, 
+           y = RATE_PER_CAPITA_N,
+           color = GEO_NAME_SHORT)) +
+  geom_line() +
+  scale_color_manual(values = autumn) + # "autumn" is a pre-defined color palette in my source file
   theme_FM() +
   labs(title = paste0("Alcohol consumption rate of adults in Europe"), 
        subtitle = "Litres per year per capita",
        x = NULL,
-       y = "Rate (L/Year) per Capita") +
+       y = "Rate (L/Year) per Capita",
+       color = "Country") +
   xlim(2000, 2022) +
-  ylim(0, max(alcohol_reg_country$RATE_PER_CAPITA_NU))
+  ylim(0, (max(plotting_data$RATE_PER_CAPITA_NU)*1.05)) #This sets the y axis maximum to 5% more than the largest upper limit in the data
+```
+
+Now I'll add the data for the whole region of Europe:
+
+```{r add Europe to plotting data}
+#plotting_data <- rbind(filter(alcohol_reg_country, GEO_NAME_SHORT == "Europe"), plotting_data)
+
+ggplot(plotting_data, 
+       aes(x = DIM_TIME)) +
+  geom_line(aes(y = RATE_PER_CAPITA_N,
+            color = GEO_NAME_SHORT)) +
+  scale_color_manual(values = dusty) + # "dusty" is a pre-defined color palette in my source file
+  theme_FM() +
+  labs(title = paste0("Alcohol consumption rate of adults in Europe"), 
+       subtitle = "Litres per year per capita",
+       x = NULL,
+       y = "Rate (L/Year) per Capita",
+       color = "Country") +
+  xlim(2000, 2022) +
+  ylim(0, (max(plotting_data$RATE_PER_CAPITA_NU)*1.05)) #This sets the y axis maximum to 5% more than the largest upper limit in the data
 ```
 
